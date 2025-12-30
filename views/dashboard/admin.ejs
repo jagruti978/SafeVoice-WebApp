@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard | SafeVoice</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Times New Roman", Times, serif;
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+        url("/images/heroimg3.jpg");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .navbar {
+      background: #360d25ef;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar h2 { color: white; }
+
+    .navbar ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+    }
+
+    .navbar a {
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .container { padding: 40px; }
+
+    .section {
+      display: none;
+      background: rgba(255,255,255,0.8);
+      padding: 30px;
+      border-radius: 15px;
+    }
+
+    .section.active { display: block; }
+
+    h3 { color: #360d25ef; }
+
+    select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    button {
+      background: #360d25ef;
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .issue {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
+
+
+    .toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 9999;
+  animation: fadeOut 4s forwards;
+}
+
+.toast.success {
+  background: #2e7d32;
+  color: white;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; display: none; }
+}
+
+  </style>
+</head>
+
+<body>
+  <% if (success) { %>
+  <div class="toast success">
+    <%= success %>
+  </div>
+<% } %>
+
+
+<div class="navbar">
+  <h2>SafeVoice - Admin</h2>
+  <ul>
+    <li><a onclick="showSection('home')">Home</a></li>
+    <li><a onclick="showSection('issues')">View Issues</a></li>
+    <li><a onclick="showSection('assign')">Assign Resolver</a></li>
+    <li><a href="/logout">Logout</a></li>
+  </ul>
+</div>
+
+<div class="container">
+
+<div id="home" class="section active">
+  <h3>Admin Dashboard</h3>
+  <p>Manage reported issues and assign resolvers efficiently.</p>
+</div>
+
+
+<div id="issues" class="section">
+  <h3>All Reported Issues</h3>
+
+  <% issues.forEach(issue => { %>
+    <div class="issue">
+      <p><b>User:</b> <%= issue.username %></p>
+      <p><b>Reported On:</b> <%= new Date(issue.created_at).toLocaleString() %></p>
+      <p><b>Title:</b> <%= issue.title %></p>
+      <p><b>Description:</b> <%= issue.description %></p>
+      <p><b>Category:</b> <%= issue.category %></p>
+      <p><b>Status:</b> <%= issue.status %></p>
+    </div>
+  <% }) %>
+</div>
+
+
+
+<div id="assign" class="section">
+  <h3>Assign Resolver</h3>
+
+  <form method="POST" action="/admin/assign">
+    <select name="issue_id" required>
+  <option value="">Select Issue</option>
+  <% assignableIssues.forEach(issue => { %>
+    <option value="<%= issue.issue_id %>">
+      <%= issue.title %>
+    </option>
+  <% }) %>
+</select>
+
+
+    <select name="resolver_id" required>
+      <option value="">Select Resolver</option>
+      <% resolvers.forEach(r => { %>
+        <option value="<%= r.resolver_id %>">
+          <%= r.name %> - <%= r.role %>
+        </option>
+      <% }) %>
+    </select>
+
+    <button type="submit">Assign</button>
+  </form>
+</div>
+
+</div>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+</script>
+
+</body>
+</html>

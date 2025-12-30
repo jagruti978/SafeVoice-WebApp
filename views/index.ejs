@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SafeVoice | Women Safety</title>
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">SafeVoice</div>
+    <ul class="nav-links">
+        <li><a onclick="showSection('home')">Home</a></li>
+        <li><a onclick="showSection('about')">About Us</a></li>
+        <li><a onclick="showSection('services')">Services</a></li>
+        <li><a onclick="showSection('qa')">Q & A</a></li>
+
+        <li class="dropdown">
+            <a>Login <i class="fa-solid fa-caret-down"></i></a>
+            <div class="dropdown-menu">
+                <a href="/login/user">User Login</a>
+                <a href="/login/admin">Admin Login</a>
+                <a href="/login/resolver">Resolver Login</a>
+            </div>
+        </li>
+    </ul>
+</nav>
+
+
+<main class="content-wrapper">
+
+    <section id="home" class="section active">
+        <h1>Empowering Women.<br>Ensuring Safety.</h1>
+        <p>
+            SafeVoice is a secure platform where women can report safety issues
+            and receive professional guidance from trusted authorities.
+        </p>
+    </section>
+
+    <section id="about" class="section">
+        <h2>About SafeVoice</h2>
+        <p>
+            SafeVoice bridges the gap between women and support systems.
+            Every issue is handled with privacy, empathy, and responsibility.
+        </p>
+    </section>
+
+    <section id="services" class="section">
+        <h2>Our Services</h2>
+
+        <div class="card-container">
+            <div class="card"><i class="fa-solid fa-user-shield"></i>Harassment Cases </div>
+            <div class="card"><i class="fa-solid fa-house-chimney"></i>Domestic Violence Cases</div>
+            <div class="card"><i class="fa-solid fa-laptop-code"></i>Cyber Crime Cases</div>
+            <div class="card"><i class="fa-solid fa-scale-balanced"></i>Legal Guidance from authorized resolver</div>
+            <div class="card"><i class="fa-solid fa-hand-holding-heart"></i>Counseling</div>
+            <div class="card"><i class="fa-solid fa-phone-volume"></i>Emergency Help</div>
+        </div>
+    </section>
+
+    <section id="qa" class="section">
+        <h2>Frequently Asked Questions</h2>
+
+        <details class="faq">
+            <summary>Is SafeVoice confidential?</summary>
+            <p>Yes, SafeVoice ensures 100% confidentiality and privacy.</p>
+        </details>
+
+        <details class="faq">
+            <summary>Can I report anonymously?</summary>
+            <p>Yes, anonymous reporting is fully supported.</p>
+        </details>
+
+        <details class="faq">
+            <summary>Who resolves issues?</summary>
+            <p>Issues are handled by verified NGOs, legal advisors, and counselors.</p>
+        </details>
+
+        <details class="faq">
+            <summary>Is SafeVoice free to use?</summary>
+            <p>Yes, SafeVoice is completely free for all users.</p>
+        </details>
+
+        <details class="faq">
+            <summary>Is cyber crime supported?</summary>
+            <p>Yes, cyber crime cases are handled with expert guidance.</p>
+        </details>
+    </section>
+
+</main>
+
+<footer>
+    <p>© 2025 SafeVoice | Emergency: 112 | Women Helpline: 181</p>
+</footer>
+
+<script>
+function showSection(id) {
+    document.querySelectorAll('.section').forEach(sec => {
+        sec.classList.remove('active');
+    });
+    document.getElementById(id).classList.add('active');
+}
+</script>
+
+</body>
+</html>

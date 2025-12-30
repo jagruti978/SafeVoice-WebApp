@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Resolver Dashboard | SafeVoice</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Times New Roman", Times, serif;
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+        url("/images/heroimg4.jpg");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .navbar {
+  background: #360d25ef;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1000;
+}
+
+    .navbar h2 { color: white; }
+
+    .navbar ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+    }
+
+    .navbar a {
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .container { padding: 40px; }
+
+    .section {
+      background: rgba(255,255,255,0.85);
+      padding: 30px;
+      border-radius: 15px;
+    }
+
+    .issue {
+      border-bottom: 1px solid #ccc;
+      padding: 15px 0;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    button {
+      background: #360d25ef;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #2e7d32;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 8px;
+      animation: fadeOut 4s forwards;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+
+<body>
+
+<% if (success) { %>
+  <div class="toast"><%= success %></div>
+<% } %>
+
+<div class="navbar">
+  <h2>SafeVoice - Resolver</h2>
+  <ul>
+    <li><a href="/dashboard/resolver">Assigned Issues</a></li>
+    <li><a href="/logout">Logout</a></li>
+  </ul>
+</div>
+
+<div class="container">
+  <div class="section">
+    <h3>Assigned Issues</h3>
+
+    <% if (issues.length === 0) { %>
+      <p>No issues assigned yet.</p>
+    <% } %>
+
+    <% issues.forEach(issue => { %>
+  <div class="issue">
+    <p><b>User:</b> <%= issue.username %></p>
+    <p><b>Title:</b> <%= issue.title %></p>
+    <p><b>Description:</b> <%= issue.description %></p>
+    <p><b>Category:</b> <%= issue.category %></p>
+    <p><b>Status:</b> <%= issue.status %></p>
+
+    <% if (!issue.solution_id) { %>
+      
+      <form method="POST" action="/resolver/solution/create">
+        <input type="hidden" name="issue_id" value="<%= issue.issue_id %>">
+        <textarea name="solution_text" placeholder="Enter solution" required></textarea>
+        <button type="submit">Submit Solution</button>
+      </form>
+
+    <% } else { %>
+  
+      <p><b>Solution:</b></p>
+      <p><%= issue.solution_text %></p>
+
+      <form method="POST" action="/resolver/solution/update">
+        <input type="hidden" name="solution_id" value="<%= issue.solution_id %>">
+        <input type="hidden" name="issue_id" value="<%= issue.issue_id %>">
+        <textarea name="solution_text" required><%= issue.solution_text %></textarea>
+        <button type="submit">Update</button>
+      </form>
+
+ 
+      <form method="POST" action="/resolver/solution/delete" 
+            onsubmit="return confirm('Delete solution?');">
+        <input type="hidden" name="solution_id" value="<%= issue.solution_id %>">
+        <input type="hidden" name="issue_id" value="<%= issue.issue_id %>">
+        <button style="background:#b71c1c;">Delete</button>
+      </form>
+    <% } %>
+  </div>
+<% }) %>
+
+  </div>
+</div>
+
+</body>
+</html>

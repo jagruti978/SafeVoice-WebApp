@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Dashboard | SafeVoice</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+  margin: 0;
+  font-family: "Times New Roman", Times, serif;
+  min-height: 100vh;
+  background:
+    linear-gradient(
+      rgba(0, 0, 0, 0.55),
+      rgba(0, 0, 0, 0.55)
+    ),
+    url("/images/heroimg2.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+    .navbar {
+      background: #360d25ef;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar h2 {
+      color: white;
+    }
+
+    .navbar ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+    }
+
+    .navbar a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* PAGE */
+    .container {
+      padding: 40px;
+    }
+
+    .section {
+      display: none;
+      background:  rgba(255, 255, 255, 0.877);
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    h3 {
+      color:  #360d25ef;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      font-size: 15px;
+    }
+
+    button {
+      background: #360d25ef;
+      color:  white;
+      border: none;
+      padding: 12px 18px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .issue {
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+    }
+
+    .section p {
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.issue p {
+  font-size: 16.5px;
+}
+
+h3 {
+  font-size: 24px;
+}
+
+  </style>
+</head>
+
+<body>
+
+
+<div class="navbar">
+  <h2>SafeVoice</h2>
+  <ul>
+    <li><a onclick="showSection('home')">Home</a></li>
+    <li><a onclick="showSection('report')">Report Issue</a></li>
+    <li><a onclick="showSection('status')">My Issues</a></li>
+    <li><a href="/logout">Logout</a></li>
+  </ul>
+</div>
+
+<div class="container">
+
+  <div id="home" class="section active">
+    <h3>Welcome to SafeVoice</h3>
+    <p>Report safety issues securely and track resolutions.</p>
+  </div>
+
+
+  <div id="report" class="section">
+    <h3>Report an Issue</h3>
+
+    <form method="POST" action="/user/issue">
+      <input name="title" placeholder="Issue Title" required>
+      <textarea name="description" placeholder="Describe the issue" required></textarea>
+
+      <select name="category" required>
+        <option value="">Select Category</option>
+        <option>Harassment</option>
+        <option>Domestic Violence</option>
+        <option>Cyber Crime</option>
+      </select>
+
+      <button type="submit">Submit Issue</button>
+    </form>
+  </div>
+
+
+<div id="status" class="section">
+  <h3>My Issues</h3>
+
+  <% if (issues && issues.length > 0) { %>
+    <% issues.forEach(issue => { %>
+
+      <div class="issue">
+
+        <p><b>Title:</b> <%= issue.title %></p>
+        <p><b>Category:</b> <%= issue.category %></p>
+        <p><b>Status:</b> <%= issue.status %></p>
+
+        <p style="font-size:14px; margin-top:6px; display:flex; gap:10px; align-items:center;">
+
+  <span style="color:green;">
+    <i class="fa-solid fa-circle-check"></i> Reported
+  </span>
+
+  <i class="fa-solid fa-arrow-right"></i>
+
+  <span style="color:orange;">
+    <i class="fa-solid fa-user-check"></i> Assigned
+  </span>
+
+  <i class="fa-solid fa-arrow-right"></i>
+
+  <% if (issue.status === "Resolved") { %>
+    <span style="color:green;">
+      <i class="fa-solid fa-shield-check"></i> Resolved
+    </span>
+  <% } else { %>
+    <span style="color:red;">
+      <i class="fa-solid fa-clock"></i> Pending
+    </span>
+  <% } %>
+
+</p>
+
+        <% if (issue.solution_text) { %>
+          <div style="margin-top:12px;padding:15px;border-radius:10px;
+            background:#e8f5e9;border:2px solid #2e7d32;">
+
+            <p style="color:#2e7d32;font-weight:bold;">
+              ✔ Verified Resolution
+            </p>
+
+            <p><b>Solution:</b><br><%= issue.solution_text %></p>
+
+            <% if (!issue.user_acknowledged) { %>
+              <form method="POST" action="/user/acknowledge">
+                <input type="hidden" name="issue_id" value="<%= issue.issue_id %>">
+                <button style="margin-top:10px;">I have read this solution</button>
+              </form>
+            <% } else { %>
+              <p style="color:#2e7d32;margin-top:10px;">
+                You acknowledged this solution
+              </p>
+            <% } %>
+
+          </div>
+        <% } else { %>
+          <p><i> Solution pending from resolver</i></p>
+        <% } %>
+
+      </div>
+
+    <% }) %>
+  <% } else { %>
+    <p>No issues reported yet.</p>
+  <% } %>
+</div>
+
+
+
+</div>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll(".section").forEach(s => {
+    s.classList.remove("active");
+  });
+  document.getElementById(id).classList.add("active");
+}
+</script>
+
+</body>
+</html>
