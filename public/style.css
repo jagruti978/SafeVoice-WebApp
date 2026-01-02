@@ -5,14 +5,14 @@
     --pink: #ffb3c1;
 }
 
-/* RESET */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* BODY */
+
 body {
     font-family: "Times New Roman", Times, serif;
     min-height: 100vh;
@@ -20,10 +20,10 @@ body {
     flex-direction: column;
     background: url("images/heroimg.jpg") no-repeat center center fixed;
     background-size: cover;
-    overflow: hidden; /* no scrollbar */
+    overflow: hidden; 
 }
 
-/* DARK OVERLAY */
+
 body::before {
     content: "";
     position: fixed;
@@ -32,7 +32,7 @@ body::before {
     z-index: -1;
 }
 
-/* NAVBAR */
+
 .navbar {
     background: var(--dark-red);
     padding: 15px 30px;
@@ -65,7 +65,6 @@ body::before {
     font-weight: bold;
 }
 
-/* DROPDOWN */
 .dropdown-menu {
     display: none;
     position: absolute;
@@ -88,7 +87,7 @@ body::before {
     display: block;
 }
 
-/* MAIN WHITE CONTAINER */
+
 .content-wrapper {
     flex: 1;
     display: flex;
@@ -96,7 +95,7 @@ body::before {
     align-items: center;
 }
 
-/* SECTIONS */
+
 .section {
     display: none;
     width: 80%;
@@ -127,7 +126,7 @@ body::before {
     line-height: 1.6;
 }
 
-/* SERVICES */
+
 .card-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -149,14 +148,13 @@ body::before {
     margin-bottom: 10px;
 }
 
-/* FOOTER */
 footer {
     background: var(--dark-red);
     color: white;
     text-align: center;
     padding: 12px;
 }
-/* FAQ */
+
 .faq {
     margin-top: 15px;
     padding: 15px;
@@ -171,9 +169,7 @@ footer {
     cursor: pointer;
 }
 
-/* ========================= */
-/* RESPONSIVE DESIGN */
-/* ========================= */
+
 
 @media (max-width: 900px) {
     .section {
@@ -189,7 +185,7 @@ footer {
 @media (max-width: 600px) {
 
     body {
-        overflow: auto; /* allow scroll on small screens */
+        overflow: auto; 
     }
 
     .navbar {
