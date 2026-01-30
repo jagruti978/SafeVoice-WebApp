@@ -1,4 +1,21 @@
 require("dotenv").config();
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/uploads");
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = Date.now() + "-" + file.originalname;
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 } 
+});
+
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
@@ -191,18 +208,40 @@ app.post("/user/acknowledge", async (req, res) => {
   res.redirect("/dashboard/user");
 });
 
-app.post("/user/issue", async (req, res) => {
+app.post("/user/issue", upload.array("images", 5), async (req, res) => {
   if (!req.session.userId) return res.redirect("/login/user");
 
   const { title, description, category } = req.body;
 
-  await pool.query(
-    "INSERT INTO issues (user_id,title,description,category) VALUES ($1,$2,$3,$4)",
+  // total size validation (1MB)
+  let totalSize = 0;
+  if (req.files) {
+    req.files.forEach(file => totalSize += file.size);
+  }
+
+  if (totalSize > 1024 * 1024) {
+    return res.send("Total image size exceeds 1MB");
+  }
+
+  const result = await pool.query(
+    "INSERT INTO issues (user_id,title,description,category) VALUES ($1,$2,$3,$4) RETURNING issue_id",
     [req.session.userId, title, description, category]
   );
 
+  const issueId = result.rows[0].issue_id;
+
+  if (req.files) {
+    for (let file of req.files) {
+      await pool.query(
+        "INSERT INTO issue_images (issue_id, image_path) VALUES ($1,$2)",
+        [issueId, file.filename]
+      );
+    }
+  }
+
   res.redirect("/dashboard/user");
 });
+
 
 app.get("/logout", (req,res)=>{
   req.session.destroy(()=>{
@@ -218,16 +257,19 @@ app.get("/dashboard/admin", async (req, res) => {
 
   const issues = await pool.query(`
     SELECT 
-      i.issue_id,
-      i.title,
-      i.description,
-      i.category,
-      i.status,
-      i.created_at,
-      u.name AS username
-    FROM issues i
-    JOIN users u ON i.user_id = u.user_id
-    ORDER BY i.created_at DESC
+  i.issue_id,
+  i.title,
+  i.description,
+  i.category,
+  i.status,
+  i.created_at,
+  u.name AS username,
+  array_agg(img.image_path) AS images
+  FROM issues i
+  JOIN users u ON i.user_id = u.user_id
+  LEFT JOIN issue_images img ON i.issue_id = img.issue_id
+  GROUP BY i.issue_id, u.name
+  ORDER BY i.created_at DESC
   `);
 
   const assignableIssues = await pool.query(`

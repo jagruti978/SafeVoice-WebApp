@@ -117,6 +117,13 @@
     <p><b>Description:</b> <%= issue.description %></p>
     <p><b>Category:</b> <%= issue.category %></p>
     <p><b>Status:</b> <%= issue.status %></p>
+    <% if (issue.images && issue.images[0]) { %>
+    <p><b>Proof Images:</b></p>
+    <% issue.images.forEach(img => { %>
+    <img src="/uploads/<%= img %>" width="120" style="margin:5px;border-radius:6px;">
+    <% }) %>
+    <% } %>
+
 
     <% if (!issue.solution_id) { %>
       

@@ -129,7 +129,7 @@ h3 {
   <div id="report" class="section">
     <h3>Report an Issue</h3>
 
-    <form method="POST" action="/user/issue">
+    <form method="POST" action="/user/issue" enctype="multipart/form-data">
       <input name="title" placeholder="Issue Title" required>
       <textarea name="description" placeholder="Describe the issue" required></textarea>
 
@@ -139,6 +139,10 @@ h3 {
         <option>Domestic Violence</option>
         <option>Cyber Crime</option>
       </select>
+
+      <input type="file" name="images" multiple accept="image/*">
+<p style="font-size:13px;color:#555;">Maximum total size: 1MB</p>
+
 
       <button type="submit">Submit Issue</button>
     </form>
