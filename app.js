@@ -326,7 +326,7 @@ app.get("/dashboard/admin", async (req, res) => {
   i.status,
   i.created_at,
   u.name AS username,
-  array_agg(img.image_path) AS images
+  array_agg(img.image_base64) AS images
   FROM issues i
   JOIN users u ON i.user_id = u.user_id
   LEFT JOIN issue_images img ON i.issue_id = img.issue_id
@@ -437,7 +437,7 @@ app.get("/dashboard/resolver", async (req, res) => {
       u.name AS username,
       s.solution_id,
       s.solution_text,
-      array_agg(img.image_path) AS images
+      array_agg(img.image_base64) AS images
     FROM issue_assignment ia
     JOIN issues i ON ia.issue_id = i.issue_id
     JOIN users u ON i.user_id = u.user_id
