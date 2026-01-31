@@ -259,6 +259,61 @@ app.post("/user/issue", upload.array("images", 5), async (req, res) => {
 });
 
 
+app.post("/user/issue/delete", async (req, res) => {
+  if (!req.session.userId) return res.redirect("/login/user");
+
+  const { issue_id } = req.body;
+
+  // Delete child images first (safe even if ON DELETE CASCADE exists)
+  await pool.query(
+    "DELETE FROM issue_images WHERE issue_id = $1",
+    [issue_id]
+  );
+
+  // Delete issue (only if it belongs to logged-in user)
+  await pool.query(
+    "DELETE FROM issues WHERE issue_id = $1 AND user_id = $2",
+    [issue_id, req.session.userId]
+  );
+
+  res.redirect("/dashboard/user");
+});
+
+
+app.get("/user/issue/edit", async (req, res) => {
+  if (!req.session.userId) return res.redirect("/login/user");
+
+  const { issue_id } = req.query;
+
+  const result = await pool.query(
+    "SELECT * FROM issues WHERE issue_id=$1 AND user_id=$2",
+    [issue_id, req.session.userId]
+  );
+
+  if (result.rows.length === 0) {
+    return res.redirect("/dashboard/user");
+  }
+
+  res.render("edit-issue", { issue: result.rows[0] });
+});
+
+
+app.post("/user/issue/update", async (req, res) => {
+  if (!req.session.userId) return res.redirect("/login/user");
+
+  const { issue_id, title, description, category } = req.body;
+
+  await pool.query(
+    `UPDATE issues 
+     SET title=$1, description=$2, category=$3 
+     WHERE issue_id=$4 AND user_id=$5`,
+    [title, description, category, issue_id, req.session.userId]
+  );
+
+  res.redirect("/dashboard/user");
+});
+
+
 app.get("/logout", (req,res)=>{
   req.session.destroy(()=>{
     res.redirect("/");

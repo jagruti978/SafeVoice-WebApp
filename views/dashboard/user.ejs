@@ -214,6 +214,27 @@ h3 {
         <% } else { %>
           <p><i> Solution pending from resolver</i></p>
         <% } %>
+     
+
+        <div style="margin-top:10px; display:flex; gap:10px;">
+
+  <form method="GET" action="/user/issue/edit">
+    <input type="hidden" name="issue_id" value="<%= issue.issue_id %>">
+    <button type="submit" style="background:#af760c;">
+      <i class="fa-solid fa-pen"></i> Edit
+    </button>
+  </form>
+
+ 
+  <form method="POST" action="/user/issue/delete"
+        onsubmit="return confirm('Are you sure you want to delete this issue?');">
+    <input type="hidden" name="issue_id" value="<%= issue.issue_id %>">
+    <button type="submit" style="background:#b71c1c;">
+      <i class="fa-solid fa-trash"></i> Delete
+    </button>
+  </form>
+
+</div>
 
       </div>
 
