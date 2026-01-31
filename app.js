@@ -264,19 +264,38 @@ app.post("/user/issue/delete", async (req, res) => {
 
   const { issue_id } = req.body;
 
-  // Delete child images first (safe even if ON DELETE CASCADE exists)
-  await pool.query(
-    "DELETE FROM issue_images WHERE issue_id = $1",
-    [issue_id]
-  );
+  try {
+    await pool.query(
+      "DELETE FROM issue_assignment WHERE issue_id = $1",
+      [issue_id]
+    );
 
-  // Delete issue (only if it belongs to logged-in user)
-  await pool.query(
-    "DELETE FROM issues WHERE issue_id = $1 AND user_id = $2",
-    [issue_id, req.session.userId]
-  );
+    await pool.query(
+      "DELETE FROM solutions WHERE issue_id = $1",
+      [issue_id]
+    );
 
-  res.redirect("/dashboard/user");
+    await pool.query(
+      "DELETE FROM status_log WHERE issue_id = $1",
+      [issue_id]
+    );
+
+    await pool.query(
+      "DELETE FROM issue_images WHERE issue_id = $1",
+      [issue_id]
+    );
+
+    await pool.query(
+      "DELETE FROM issues WHERE issue_id = $1 AND user_id = $2",
+      [issue_id, req.session.userId]
+    );
+
+    res.redirect("/dashboard/user");
+
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.send("Failed to delete issue");
+  }
 });
 
 
@@ -503,45 +522,6 @@ app.post("/resolver/solution/update", async (req, res) => {
   );
 
   res.redirect("/dashboard/resolver?success=Solution updated successfully");
-});
-
-app.post("/user/issue/delete", async (req, res) => {
-  if (!req.session.userId) return res.redirect("/login/user");
-
-  const { issue_id } = req.body;
-
-  try {
-    await pool.query(
-      "DELETE FROM issue_assignment WHERE issue_id = $1",
-      [issue_id]
-    );
-
-    await pool.query(
-      "DELETE FROM solutions WHERE issue_id = $1",
-      [issue_id]
-    );
-
-    await pool.query(
-      "DELETE FROM status_log WHERE issue_id = $1",
-      [issue_id]
-    );
-
-    await pool.query(
-      "DELETE FROM issue_images WHERE issue_id = $1",
-      [issue_id]
-    );
-
-    await pool.query(
-      "DELETE FROM issues WHERE issue_id = $1 AND user_id = $2",
-      [issue_id, req.session.userId]
-    );
-
-    res.redirect("/dashboard/user");
-
-  } catch (err) {
-    console.error("Delete error:", err);
-    res.send("Failed to delete issue");
-  }
 });
 
 
