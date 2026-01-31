@@ -468,8 +468,8 @@ app.get("/dashboard/resolver", async (req, res) => {
     LEFT JOIN issue_images img ON i.issue_id = img.issue_id
     WHERE ia.resolver_id = $1
     GROUP BY 
-      i.issue_id, u.name, s.solution_id, s.solution_text
-    ORDER BY ia.assigned_at DESC
+    i.issue_id, u.name, s.solution_id, s.solution_text
+    ORDER BY MAX(ia.assigned_at) DESC
   `, [req.session.resolverId]);
 
   res.render("dashboard/resolver", {
