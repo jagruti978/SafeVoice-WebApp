@@ -459,12 +459,16 @@ app.get("/dashboard/resolver", async (req, res) => {
       i.created_at,
       u.name AS username,
       s.solution_id,
-      s.solution_text
+      s.solution_text,
+      array_agg(img.image_path) AS images
     FROM issue_assignment ia
     JOIN issues i ON ia.issue_id = i.issue_id
     JOIN users u ON i.user_id = u.user_id
     LEFT JOIN solutions s ON i.issue_id = s.issue_id
+    LEFT JOIN issue_images img ON i.issue_id = img.issue_id
     WHERE ia.resolver_id = $1
+    GROUP BY 
+      i.issue_id, u.name, s.solution_id, s.solution_text
     ORDER BY ia.assigned_at DESC
   `, [req.session.resolverId]);
 
@@ -473,6 +477,7 @@ app.get("/dashboard/resolver", async (req, res) => {
     success: req.query.success || null
   });
 });
+
 
 app.post("/resolver/solution/create", async (req, res) => {
   if (!req.session.resolverId) {
