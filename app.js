@@ -6,9 +6,24 @@ const storage = multer.diskStorage({
     cb(null, path.join(__dirname, "public/uploads"));
   },
   filename: function (req, file, cb) {
-    const uniqueName = Date.now() + "-" + file.originalname;
-    cb(null, uniqueName);
-  }
+  const category = req.body.category || "general";
+
+  const now = new Date();
+  const formattedDate =
+    now.getFullYear() + "-" +
+    String(now.getMonth() + 1).padStart(2, "0") + "-" +
+    String(now.getDate()).padStart(2, "0") + "_" +
+    String(now.getHours()).padStart(2, "0") + "-" +
+    String(now.getMinutes()).padStart(2, "0") + "-" +
+    String(now.getSeconds()).padStart(2, "0");
+
+  const ext = file.originalname.split(".").pop();
+
+  const fileName = `${category.replace(/\s+/g, "-")}_${formattedDate}.${ext}`;
+
+  cb(null, fileName);
+}
+
 });
 
 
