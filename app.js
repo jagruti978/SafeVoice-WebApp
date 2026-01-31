@@ -261,7 +261,7 @@ app.post("/user/issue", upload.array("images", 5), async (req, res) => {
       );
     }
   }
-
+ req.session.success = "Issue submitted successfully";
   res.redirect("/dashboard/user");
 });
 
