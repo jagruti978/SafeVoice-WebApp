@@ -294,7 +294,8 @@ app.get("/user/issue/edit", async (req, res) => {
     return res.redirect("/dashboard/user");
   }
 
-  res.render("edit-issue", { issue: result.rows[0] });
+  res.render("dashboard/edit-issue", { issue: result.rows[0] });
+
 });
 
 
@@ -504,26 +505,30 @@ app.post("/resolver/solution/update", async (req, res) => {
   res.redirect("/dashboard/resolver?success=Solution updated successfully");
 });
 
-app.post("/resolver/solution/delete", async (req, res) => {
-  const { solution_id, issue_id } = req.body;
+app.post("/user/issue/delete", async (req, res) => {
+  if (!req.session.userId) return res.redirect("/login/user");
 
-  await pool.query(
-    "DELETE FROM solutions WHERE solution_id=$1",
-    [solution_id]
-  );
+  const { issue_id } = req.body;
 
+  // 1️⃣ Delete assignments FIRST
   await pool.query(
-    "UPDATE issues SET status='Assigned' WHERE issue_id=$1",
+    "DELETE FROM issue_assignment WHERE issue_id = $1",
     [issue_id]
   );
 
+  // 2️⃣ Delete images
   await pool.query(
-    `INSERT INTO status_log (issue_id,status,updated_by,remarks)
-     VALUES ($1,'Assigned','Resolver','Solution deleted')`,
+    "DELETE FROM issue_images WHERE issue_id = $1",
     [issue_id]
   );
 
-  res.redirect("/dashboard/resolver?success=Solution deleted successfully");
+  // 3️⃣ Delete issue (only user's issue)
+  await pool.query(
+    "DELETE FROM issues WHERE issue_id = $1 AND user_id = $2",
+    [issue_id, req.session.userId]
+  );
+
+  res.redirect("/dashboard/user");
 });
 
 
