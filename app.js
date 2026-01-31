@@ -523,6 +523,37 @@ app.post("/resolver/solution/update", async (req, res) => {
   res.redirect("/dashboard/resolver?success=Solution updated successfully");
 });
 
+app.post("/resolver/solution/delete", async (req, res) => {
+  if (!req.session.resolverId) {
+    return res.redirect("/login/resolver");
+  }
+
+  const { solution_id, issue_id } = req.body;
+
+  try {
+  
+    await pool.query(
+      "DELETE FROM solutions WHERE solution_id=$1 AND resolver_id=$2",
+      [solution_id, req.session.resolverId]
+    );
+    await pool.query(
+      "UPDATE issues SET status='Assigned' WHERE issue_id=$1",
+      [issue_id]
+    );
+
+    await pool.query(
+      `INSERT INTO status_log (issue_id, status, updated_by, remarks)
+       VALUES ($1, 'Solution Deleted', 'Resolver', 'Solution removed by resolver')`,
+      [issue_id]
+    );
+
+    res.redirect("/dashboard/resolver?success=Solution deleted successfully");
+
+  } catch (err) {
+    console.error(err);
+    res.redirect("/dashboard/resolver?success=Failed to delete solution");
+  }
+});
 
 
 
