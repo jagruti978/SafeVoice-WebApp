@@ -107,13 +107,14 @@ h3 {
 
 <body>
 
-<% if (success) { %>
-  <div class="toast success"><%= success %></div>
+<% if (typeof session !== "undefined" && session.success) { %>
+  <div class="toast success"><%= session.success %></div>
 <% } %>
 
-<% if (error) { %>
-  <div class="toast error"><%= error %></div>
+<% if (typeof session !== "undefined" && session.error) { %>
+  <div class="toast error"><%= session.error %></div>
 <% } %>
+
 
 
 <div class="navbar">

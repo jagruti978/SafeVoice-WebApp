@@ -206,10 +206,18 @@ app.get("/dashboard/user", async (req, res) => {
     ORDER BY i.created_at DESC
   `, [req.session.userId]);
 
+  const success = req.session.success;
+  const error = req.session.error;
+
+  req.session.success = null;
+  req.session.error = null;
+
   res.render("dashboard/user", {
-    issues: result.rows
+    issues: result.rows,
+    session: { success, error }
   });
 });
+
 
 app.post("/user/acknowledge", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login/user");
