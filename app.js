@@ -1,34 +1,9 @@
 require("dotenv").config();
 const multer = require("multer");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "public/uploads"));
-  },
-  filename: function (req, file, cb) {
-  const category = req.body.category || "general";
-
-  const now = new Date();
-  const formattedDate =
-    now.getFullYear() + "-" +
-    String(now.getMonth() + 1).padStart(2, "0") + "-" +
-    String(now.getDate()).padStart(2, "0") + "_" +
-    String(now.getHours()).padStart(2, "0") + "-" +
-    String(now.getMinutes()).padStart(2, "0") + "-" +
-    String(now.getSeconds()).padStart(2, "0");
-
-  const ext = file.originalname.split(".").pop();
-
-  const fileName = `${category.replace(/\s+/g, "-")}_${formattedDate}.${ext}`;
-
-  cb(null, fileName);
-}
-
-});
-
-
+const storage = multer.memoryStorage();
 const upload = multer({
-  storage: storage,
+  storage,
   limits: { fileSize: 1024 * 1024 } 
 });
 
@@ -255,10 +230,12 @@ app.post("/user/issue", upload.array("images", 5), async (req, res) => {
 
   if (req.files) {
     for (let file of req.files) {
-      await pool.query(
-        "INSERT INTO issue_images (issue_id, image_path) VALUES ($1,$2)",
-        [issueId, file.filename]
-      );
+     const base64Image = file.buffer.toString("base64");
+     await pool.query(
+     "INSERT INTO issue_images (issue_id, image_base64) VALUES ($1,$2)",
+     [issueId, base64Image]
+    );
+
     }
   }
  req.session.success = "Issue submitted successfully";

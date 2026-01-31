@@ -137,7 +137,8 @@
       <% if (issue.images && issue.images[0]) { %>
       <p><b>Proof Images:</b></p>
       <% issue.images.forEach(img => { %>
-      <img src="/uploads/<%= img %>" width="120" style="margin:5px;border-radius:6px;"><% }) %><% } %>
+      <img src="data:image/jpeg;base64,<%= img %>" width="120"style="margin:5px;border-radius:6px;">
+<% }) %><% } %>
       </div>
   <% }) %>
 </div>
