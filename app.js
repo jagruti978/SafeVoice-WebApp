@@ -511,9 +511,8 @@ app.post("/user/issue/delete", async (req, res) => {
   const { issue_id } = req.body;
 
   try {
-    
     await pool.query(
-      "DELETE FROM issue_images WHERE issue_id = $1",
+      "DELETE FROM issue_assignment WHERE issue_id = $1",
       [issue_id]
     );
 
@@ -528,7 +527,7 @@ app.post("/user/issue/delete", async (req, res) => {
     );
 
     await pool.query(
-      "DELETE FROM issue_assignment WHERE issue_id = $1",
+      "DELETE FROM issue_images WHERE issue_id = $1",
       [issue_id]
     );
 
@@ -540,10 +539,11 @@ app.post("/user/issue/delete", async (req, res) => {
     res.redirect("/dashboard/user");
 
   } catch (err) {
-    console.error(err);
-    res.send("Error deleting issue");
+    console.error("Delete error:", err);
+    res.send("Failed to delete issue");
   }
 });
+
 
 
 

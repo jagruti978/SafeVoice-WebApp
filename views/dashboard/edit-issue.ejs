@@ -104,8 +104,19 @@ h3 {
 
   </style>
 </head>
-<div>
+
+<div class="navbar">
+  <h2>SafeVoice</h2>
+  <ul>
+    <li><a onclick="showSection('home')">Home</a></li>
+    <li><a onclick="showSection('report')">Report Issue</a></li>
+    <li><a onclick="showSection('status')">My Issues</a></li>
+    <li><a href="/logout">Logout</a></li>
+  </ul>
+</div>
+
 <div class="container">
+<div class="section">
 <h3>Edit Issue</h3>
 
 <form method="POST" action="/user/issue/update">
@@ -122,6 +133,7 @@ h3 {
 
   <button type="submit">Update Issue</button>
 </form>
+</div>
 </div>
 </body>
 </html>
