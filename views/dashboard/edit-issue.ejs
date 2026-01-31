@@ -46,7 +46,6 @@
       cursor: pointer;
     }
 
-    /* PAGE */
     .container {
       padding: 40px;
     }
@@ -102,6 +101,32 @@ h3 {
   font-size: 24px;
 }
 
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 9999;
+  animation: fadeOut 4s forwards;
+}
+
+.toast.success {
+  background: #2e7d32;
+  color: white;
+}
+
+.toast.error {
+  background: #c62828;
+  color: white;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
   </style>
 </head>
 
@@ -114,7 +139,7 @@ h3 {
 </div>
 
 <div class="container">
-<div class="section">
+<div class="section active">
 <h3>Edit Issue</h3>
 
 <form method="POST" action="/user/issue/update">

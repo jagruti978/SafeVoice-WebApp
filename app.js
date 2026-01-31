@@ -229,7 +229,6 @@ app.post("/user/issue", upload.array("images", 5), async (req, res) => {
 
   const { title, description, category } = req.body;
 
-  // total size validation (1MB)
   let totalSize = 0;
   if (req.files) {
     req.files.forEach(file => totalSize += file.size);
@@ -260,43 +259,25 @@ app.post("/user/issue", upload.array("images", 5), async (req, res) => {
 
 
 app.post("/user/issue/delete", async (req, res) => {
-  if (!req.session.userId) return res.redirect("/login/user");
-
   const { issue_id } = req.body;
 
   try {
-    await pool.query(
-      "DELETE FROM issue_assignment WHERE issue_id = $1",
-      [issue_id]
-    );
+    await pool.query("DELETE FROM issue_assignment WHERE issue_id=$1", [issue_id]);
+    await pool.query("DELETE FROM solutions WHERE issue_id=$1", [issue_id]);
+    await pool.query("DELETE FROM status_log WHERE issue_id=$1", [issue_id]);
+    await pool.query("DELETE FROM issue_images WHERE issue_id=$1", [issue_id]);
+    await pool.query("DELETE FROM issues WHERE issue_id=$1", [issue_id]);
 
-    await pool.query(
-      "DELETE FROM solutions WHERE issue_id = $1",
-      [issue_id]
-    );
-
-    await pool.query(
-      "DELETE FROM status_log WHERE issue_id = $1",
-      [issue_id]
-    );
-
-    await pool.query(
-      "DELETE FROM issue_images WHERE issue_id = $1",
-      [issue_id]
-    );
-
-    await pool.query(
-      "DELETE FROM issues WHERE issue_id = $1 AND user_id = $2",
-      [issue_id, req.session.userId]
-    );
-
+    req.session.success = "Issue deleted successfully";
     res.redirect("/dashboard/user");
 
   } catch (err) {
-    console.error("Delete error:", err);
-    res.send("Failed to delete issue");
+    console.error(err);
+    req.session.error = "Failed to delete issue";
+    res.redirect("/dashboard/user");
   }
 });
+
 
 
 app.get("/user/issue/edit", async (req, res) => {
@@ -319,19 +300,24 @@ app.get("/user/issue/edit", async (req, res) => {
 
 
 app.post("/user/issue/update", async (req, res) => {
-  if (!req.session.userId) return res.redirect("/login/user");
-
   const { issue_id, title, description, category } = req.body;
 
-  await pool.query(
-    `UPDATE issues 
-     SET title=$1, description=$2, category=$3 
-     WHERE issue_id=$4 AND user_id=$5`,
-    [title, description, category, issue_id, req.session.userId]
-  );
+  try {
+    await pool.query(
+      "UPDATE issues SET title=$1, description=$2, category=$3 WHERE issue_id=$4",
+      [title, description, category, issue_id]
+    );
 
-  res.redirect("/dashboard/user");
+    req.session.success = "Issue updated successfully";
+    res.redirect("/dashboard/user");
+
+  } catch (err) {
+    console.error(err);
+    req.session.error = "Failed to update issue";
+    res.redirect("/dashboard/user");
+  }
 });
+
 
 
 app.get("/logout", (req,res)=>{

@@ -107,6 +107,14 @@ h3 {
 
 <body>
 
+<% if (success) { %>
+  <div class="toast success"><%= success %></div>
+<% } %>
+
+<% if (error) { %>
+  <div class="toast error"><%= error %></div>
+<% } %>
+
 
 <div class="navbar">
   <h2>SafeVoice</h2>
