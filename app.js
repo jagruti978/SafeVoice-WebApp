@@ -210,7 +210,7 @@ app.post("/user/acknowledge", async (req, res) => {
 app.post("/user/issue", upload.array("images", 5), async (req, res) => {
   if (!req.session.userId) return res.redirect("/login/user");
 
-  const { title, description, category } = req.body;
+  const { title, description, category, is_anonymous } = req.body;
 
   let totalSize = 0;
   if (req.files) {
@@ -222,8 +222,8 @@ app.post("/user/issue", upload.array("images", 5), async (req, res) => {
   }
 
   const result = await pool.query(
-    "INSERT INTO issues (user_id,title,description,category) VALUES ($1,$2,$3,$4) RETURNING issue_id",
-    [req.session.userId, title, description, category]
+    "INSERT INTO issues (user_id,title,description,category,is_anonymous) VALUES ($1,$2,$3,$4) RETURNING issue_id",
+    [req.session.userId, title, description, category, is_anonymous === "true"]
   );
 
   const issueId = result.rows[0].issue_id;
@@ -325,7 +325,10 @@ app.get("/dashboard/admin", async (req, res) => {
   i.category,
   i.status,
   i.created_at,
-  u.name AS username,
+  CASE
+  WHEN i.is_anonymous = true THEN 'Anonymous User'
+  ELSE u.name
+  END AS username
   array_agg(img.image_base64) AS images
   FROM issues i
   JOIN users u ON i.user_id = u.user_id
@@ -434,7 +437,10 @@ app.get("/dashboard/resolver", async (req, res) => {
       i.category,
       i.status,
       i.created_at,
-      u.name AS username,
+      CASE 
+      WHEN i.is_anonymous = true THEN 'Anonymous User'
+      ELSE u.name
+      END AS username
       s.solution_id,
       s.solution_text,
       array_agg(img.image_base64) AS images
