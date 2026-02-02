@@ -1,15 +1,14 @@
 require("dotenv").config();
 const multer = require("multer");
-
+const bcrypt = require("bcrypt");
+const hashedPassword = await bcrypt.hash(password, 10);
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: { fileSize: 1024 * 1024 } 
 });
-
 const express = require("express");
 const path = require("path");
-const bodyParser = require("body-parser");
 const pool = require("./config/db");
 const session = require("express-session");
 const app = express();
@@ -20,7 +19,6 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 app.use(express.static("public"));
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
   secret: "safevoice_secret",
   resave: false,
@@ -67,10 +65,10 @@ app.post("/signup/user", async (req, res) => {
   }
 
   try {
-    await pool.query(
-      "INSERT INTO users (name, email, phone, password) VALUES ($1,$2,$3,$4)",
-      [name, email, phone, password]
-    );
+ await pool.query(
+  "INSERT INTO users (name, email, phone, password) VALUES ($1,$2,$3,$4)",
+  [name, email, phone, hashedPassword]
+);
     res.redirect("/login/user?success=Signup successful! Please login");
   } catch {
     res.redirect("/login/user?error=Email already exists");
@@ -80,16 +78,19 @@ app.post("/login/user", async (req, res) => {
   const { email, password } = req.body;
 
   const result = await pool.query(
-    "SELECT * FROM users WHERE email=$1 AND password=$2",
-    [email, password]
-  );
+  "SELECT * FROM users WHERE email=$1",
+  [email]
+);
 
-  if (result.rows.length > 0) {
-    req.session.userId = result.rows[0].user_id;
-    res.redirect("/dashboard/user");
-  } else {
-    res.redirect("/login/user?error=Invalid email or password");
-  }
+if (
+  result.rows.length > 0 &&
+  await bcrypt.compare(password, result.rows[0].password)
+) {
+  req.session.userId = result.rows[0].user_id;
+  res.redirect("/dashboard/user");
+} else {
+  res.redirect("/login/user?error=Invalid email or password");
+}
 });
 
 
@@ -102,10 +103,10 @@ app.post("/signup/admin", async (req, res) => {
     return res.redirect("/login/admin?error=Please fill all fields");
   }
 
-  await pool.query(
-    "INSERT INTO admins (name, email, password) VALUES ($1,$2,$3)",
-    [name, email, password]
-  );
+await pool.query(
+  "INSERT INTO admins (name, email, password) VALUES ($1,$2,$3)",
+  [name, email, hashedPassword]
+);
 
   res.redirect("/login/admin?success=Admin registered successfully");
 });
@@ -113,17 +114,21 @@ app.post("/signup/admin", async (req, res) => {
 app.post("/login/admin", async (req, res) => {
   const { email, password } = req.body;
 
-  const result = await pool.query(
-    "SELECT * FROM admins WHERE email=$1 AND password=$2",
-    [email, password]
-  );
+ const result = await pool.query(
+  "SELECT * FROM admins WHERE email=$1",
+  [email]
+);
 
-  if (result.rows.length > 0) {
-    req.session.adminId = result.rows[0].admin_id;
-    res.redirect("/dashboard/admin");
-  } else {
-    res.redirect("/login/admin?error=Invalid admin credentials");
-  }
+if (
+  result.rows.length > 0 &&
+  await bcrypt.compare(password, result.rows[0].password)
+) {
+  req.session.adminId = result.rows[0].admin_id;
+  res.redirect("/dashboard/admin");
+} else {
+  res.redirect("/login/admin?error=Invalid admin credentials");
+}
+
 });
 
 
@@ -138,27 +143,30 @@ app.post("/signup/resolver", async (req, res) => {
   }
 
   await pool.query(
-    "INSERT INTO resolvers (name, role, phone, email, password) VALUES ($1,$2,$3,$4,$5)",
-    [name, role, phone, email, password]
-  );
-
+  "INSERT INTO resolvers (name, role, phone, email, password) VALUES ($1,$2,$3,$4,$5)",
+  [name, role, phone, email, hashedPassword]
+);
   res.redirect("/login/resolver?success=Resolver registered successfully");
 });
 
 app.post("/login/resolver", async (req, res) => {
   const { email, password } = req.body;
 
-  const result = await pool.query(
-    "SELECT * FROM resolvers WHERE email=$1 AND password=$2",
-    [email, password]
-  );
+const result = await pool.query(
+  "SELECT * FROM resolvers WHERE email=$1",
+  [email]
+);
 
-  if (result.rows.length > 0) {
-    req.session.resolverId = result.rows[0].resolver_id; 
-    res.redirect("/dashboard/resolver");
-  } else {
-    res.redirect("/login/resolver?error=Invalid resolver credentials");
-  }
+if (
+  result.rows.length > 0 &&
+  await bcrypt.compare(password, result.rows[0].password)
+) {
+  req.session.resolverId = result.rows[0].resolver_id;
+  res.redirect("/dashboard/resolver");
+} else {
+  res.redirect("/login/resolver?error=Invalid resolver credentials");
+}
+
 });
 
 
@@ -317,25 +325,34 @@ app.get("/logout", (req,res)=>{
 
 app.get("/dashboard/admin", async (req, res) => {
 
-  const issues = await pool.query(`
-    SELECT 
-  i.issue_id,
-  i.title,
-  i.description,
-  i.category,
-  i.status,
-  i.created_at,
-  CASE
-  WHEN i.is_anonymous = true THEN 'Anonymous User'
-  ELSE u.name
-  END AS username
-  array_agg(img.image_base64) AS images
+const issues = await pool.query(`
+  SELECT 
+    i.issue_id,
+    i.title,
+    i.description,
+    i.category,
+    i.status,
+    i.created_at,
+    CASE
+      WHEN i.is_anonymous = true THEN 'Anonymous User'
+      ELSE u.name
+    END AS username,
+    array_agg(img.image_base64) AS images
   FROM issues i
   JOIN users u ON i.user_id = u.user_id
   LEFT JOIN issue_images img ON i.issue_id = img.issue_id
-  GROUP BY i.issue_id, u.name
+  GROUP BY 
+    i.issue_id, 
+    i.title,
+    i.description,
+    i.category,
+    i.status,
+    i.created_at,
+    i.is_anonymous,
+    u.name
   ORDER BY i.created_at DESC
-  `);
+`);
+
 
   const assignableIssues = await pool.query(`
     SELECT 
@@ -429,31 +446,41 @@ app.get("/dashboard/resolver", async (req, res) => {
     return res.redirect("/login/resolver");
   }
 
-  const issues = await pool.query(`
-    SELECT 
-      i.issue_id,
-      i.title,
-      i.description,
-      i.category,
-      i.status,
-      i.created_at,
-      CASE 
+ const issues = await pool.query(`
+  SELECT 
+    i.issue_id,
+    i.title,
+    i.description,
+    i.category,
+    i.status,
+    i.created_at,
+    CASE 
       WHEN i.is_anonymous = true THEN 'Anonymous User'
       ELSE u.name
-      END AS username
-      s.solution_id,
-      s.solution_text,
-      array_agg(img.image_base64) AS images
-    FROM issue_assignment ia
-    JOIN issues i ON ia.issue_id = i.issue_id
-    JOIN users u ON i.user_id = u.user_id
-    LEFT JOIN solutions s ON i.issue_id = s.issue_id
-    LEFT JOIN issue_images img ON i.issue_id = img.issue_id
-    WHERE ia.resolver_id = $1
-    GROUP BY 
-    i.issue_id, u.name, s.solution_id, s.solution_text
-    ORDER BY MAX(ia.assigned_at) DESC
-  `, [req.session.resolverId]);
+    END AS username,
+    s.solution_id,
+    s.solution_text,
+    array_agg(img.image_base64) AS images
+  FROM issue_assignment ia
+  JOIN issues i ON ia.issue_id = i.issue_id
+  JOIN users u ON i.user_id = u.user_id
+  LEFT JOIN solutions s ON i.issue_id = s.issue_id
+  LEFT JOIN issue_images img ON i.issue_id = img.issue_id
+  WHERE ia.resolver_id = $1
+  GROUP BY 
+    i.issue_id,
+    i.title,
+    i.description,
+    i.category,
+    i.status,
+    i.created_at,
+    i.is_anonymous,
+    u.name,
+    s.solution_id,
+    s.solution_text
+  ORDER BY MAX(ia.assigned_at) DESC
+`, [req.session.resolverId]);
+
 
   res.render("dashboard/resolver", {
     issues: issues.rows,
