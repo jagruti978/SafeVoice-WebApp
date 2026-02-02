@@ -67,12 +67,15 @@
       color:  #360d25ef;
     }
 
-    input, textarea, select {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      font-size: 15px;
-    }
+   input:not([type="checkbox"]),
+textarea,
+select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  font-size: 15px;
+}
+
 
     button {
       background: #360d25ef;
@@ -126,22 +129,24 @@ h3 {
 }
 
 .anonymous-option {
-  margin-top: 12px;
+  margin: 12px 0 18px;
 }
 
-.anonymous-option label {
+.anonymous-label {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-size: 15px;
-  cursor: pointer;
   color: #333;
+  cursor: pointer;
 }
 
-.anonymous-option input[type="checkbox"] {
+.anonymous-label input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  accent-color: #360d25ef;
 }
 
 @keyframes slideIn {
@@ -214,7 +219,7 @@ h3 {
 <p style="font-size:13px;color:#555;">Maximum total size: 1MB</p>
 
 <div class="anonymous-option">
-  <label>
+  <label class="anonymous-label">
     <input type="checkbox" name="is_anonymous" value="true">
     <span>Report issue anonymously</span>
   </label>
