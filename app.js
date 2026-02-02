@@ -2,6 +2,7 @@ require("dotenv").config();
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
+const cloudinary = require("./config/cloudinary");
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
@@ -238,16 +239,22 @@ app.post("/user/issue", upload.array("images", 5), async (req, res) => {
 
   const issueId = result.rows[0].issue_id;
 
-  if (req.files) {
-    for (let file of req.files) {
-     const base64Image = file.buffer.toString("base64");
-     await pool.query(
-     "INSERT INTO issue_images (issue_id, image_base64) VALUES ($1,$2)",
-     [issueId, base64Image]
+ if (req.files) {
+  for (let file of req.files) {
+    const result = await cloudinary.uploader.upload(
+      `data:${file.mimetype};base64,${file.buffer.toString("base64")}`,
+      {
+        folder: "safevoice_issues"
+      }
     );
 
-    }
+    await pool.query(
+      "INSERT INTO issue_images (issue_id, image_url) VALUES ($1,$2)",
+      [issueId, result.secure_url]
+    );
   }
+}
+
  req.session.success = "Issue submitted successfully";
   res.redirect("/dashboard/user");
 });
