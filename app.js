@@ -222,7 +222,7 @@ app.post("/user/issue", upload.array("images", 5), async (req, res) => {
   }
 
   const result = await pool.query(
-    "INSERT INTO issues (user_id,title,description,category,is_anonymous) VALUES ($1,$2,$3,$4) RETURNING issue_id",
+    "INSERT INTO issues (user_id,title,description,category,is_anonymous) VALUES ($1,$2,$3,$4,$5) RETURNING issue_id",
     [req.session.userId, title, description, category, is_anonymous === "true"]
   );
 
