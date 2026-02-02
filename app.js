@@ -1,6 +1,7 @@
 require("dotenv").config();
 const multer = require("multer");
 const bcrypt = require("bcrypt");
+const bodyParser = require("body-parser");
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
@@ -16,7 +17,7 @@ const app = express();
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(session({
   secret: "safevoice_secret",
