@@ -1,7 +1,6 @@
 require("dotenv").config();
 const multer = require("multer");
 const bcrypt = require("bcrypt");
-const hashedPassword = await bcrypt.hash(password, 10);
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
@@ -65,6 +64,8 @@ app.post("/signup/user", async (req, res) => {
   }
 
   try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
  await pool.query(
   "INSERT INTO users (name, email, phone, password) VALUES ($1,$2,$3,$4)",
   [name, email, phone, hashedPassword]
@@ -102,7 +103,7 @@ app.post("/signup/admin", async (req, res) => {
   if (!name || !email || !password) {
     return res.redirect("/login/admin?error=Please fill all fields");
   }
-
+const hashedPassword = await bcrypt.hash(password, 10);
 await pool.query(
   "INSERT INTO admins (name, email, password) VALUES ($1,$2,$3)",
   [name, email, hashedPassword]
@@ -141,7 +142,7 @@ app.post("/signup/resolver", async (req, res) => {
   if (!name || !role || !phone || !email || !password) {
     return res.redirect("/login/resolver?error=Please fill all fields");
   }
-
+  const hashedPassword = await bcrypt.hash(password, 10);
   await pool.query(
   "INSERT INTO resolvers (name, role, phone, email, password) VALUES ($1,$2,$3,$4,$5)",
   [name, role, phone, email, hashedPassword]
