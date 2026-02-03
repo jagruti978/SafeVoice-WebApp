@@ -346,7 +346,7 @@ const issues = await pool.query(`
       WHEN i.is_anonymous = true THEN 'Anonymous User'
       ELSE u.name
     END AS username,
-    array_agg(img.image_base64) AS images
+    array_agg(img.image_url) AS images
   FROM issues i
   JOIN users u ON i.user_id = u.user_id
   LEFT JOIN issue_images img ON i.issue_id = img.issue_id
@@ -361,6 +361,7 @@ const issues = await pool.query(`
     u.name
   ORDER BY i.created_at DESC
 `);
+
 
 
   const assignableIssues = await pool.query(`
@@ -455,7 +456,7 @@ app.get("/dashboard/resolver", async (req, res) => {
     return res.redirect("/login/resolver");
   }
 
- const issues = await pool.query(`
+const issues = await pool.query(`
   SELECT 
     i.issue_id,
     i.title,
@@ -469,7 +470,7 @@ app.get("/dashboard/resolver", async (req, res) => {
     END AS username,
     s.solution_id,
     s.solution_text,
-    array_agg(img.image_base64) AS images
+    array_agg(img.image_url) AS images
   FROM issue_assignment ia
   JOIN issues i ON ia.issue_id = i.issue_id
   JOIN users u ON i.user_id = u.user_id
