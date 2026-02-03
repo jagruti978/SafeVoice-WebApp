@@ -200,7 +200,7 @@ app.get("/dashboard/user", async (req, res) => {
    ORDER BY updated_at ASC`,
   [issue.issue_id]
 );
-
+  issue.logs = logs.rows; 
 }
 
   const success = req.session.success;
