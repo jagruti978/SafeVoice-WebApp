@@ -259,10 +259,10 @@ app.post("/user/issue", upload.array("images", 5), async (req, res) => {
       }
     );
 
-    await pool.query(
-      "INSERT INTO issue_images (issue_id, image_url) VALUES ($1,$2)",
-      [issueId, result.secure_url]
-    );
+   await pool.query(
+  "INSERT INTO issue_images (issue_id, image_url, public_id) VALUES ($1,$2,$3)",
+  [issueId, result.secure_url, result.public_id]
+);
   }
 }
 
@@ -275,6 +275,17 @@ app.post("/user/issue/delete", async (req, res) => {
   const { issue_id } = req.body;
 
   try {
+
+    const images = await pool.query(
+  "SELECT public_id FROM issue_images WHERE issue_id=$1",
+  [issue_id]
+);
+
+for (let img of images.rows) {
+  if (img.public_id) {
+    await cloudinary.uploader.destroy(img.public_id);
+  }
+}
     await pool.query("DELETE FROM issue_assignment WHERE issue_id=$1", [issue_id]);
     await pool.query("DELETE FROM solutions WHERE issue_id=$1", [issue_id]);
     await pool.query("DELETE FROM status_log WHERE issue_id=$1", [issue_id]);
