@@ -251,7 +251,7 @@ h3 {
           (<%= log.updated_by %>)<br>
           <%= log.remarks %><br>
           <small style="color:#555;">
-            <%= new Date(log.created_at).toLocaleString() %>
+           <%= new Date(log.updated_at).toLocaleString() %>
           </small>
         </li>
       <% }) %>
