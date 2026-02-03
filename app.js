@@ -192,6 +192,17 @@ app.get("/dashboard/user", async (req, res) => {
     ORDER BY i.created_at DESC
   `, [req.session.userId]);
 
+  for (let issue of result.rows) {
+  const logs = await pool.query(
+    `SELECT status, updated_by, remarks, created_at
+     FROM status_log
+     WHERE issue_id=$1
+     ORDER BY created_at ASC`,
+    [issue.issue_id]
+  );
+  issue.logs = logs.rows;
+}
+
   const success = req.session.success;
   const error = req.session.error;
 
@@ -362,7 +373,16 @@ const issues = await pool.query(`
   ORDER BY i.created_at DESC
 `);
 
-
+  for (let issue of issues.rows) {
+  const logs = await pool.query(
+    `SELECT status, updated_by, remarks, created_at
+     FROM status_log
+     WHERE issue_id=$1
+     ORDER BY created_at ASC`,
+    [issue.issue_id]
+  );
+  issue.logs = logs.rows;
+  }
 
   const assignableIssues = await pool.query(`
     SELECT 
@@ -490,6 +510,17 @@ const issues = await pool.query(`
     s.solution_text
   ORDER BY MAX(ia.assigned_at) DESC
 `, [req.session.resolverId]);
+
+for (let issue of issues.rows) {
+  const logs = await pool.query(
+    `SELECT status, updated_by, remarks, created_at
+     FROM status_log
+     WHERE issue_id=$1
+     ORDER BY created_at ASC`,
+    [issue.issue_id]
+  );
+  issue.logs = logs.rows;
+}
 
 
   res.render("dashboard/resolver", {
