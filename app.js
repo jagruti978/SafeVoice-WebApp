@@ -193,14 +193,14 @@ app.get("/dashboard/user", async (req, res) => {
   `, [req.session.userId]);
 
   for (let issue of result.rows) {
-  const logs = await pool.query(
-    `SELECT status, updated_by, remarks, created_at
-     FROM status_log
-     WHERE issue_id=$1
-     ORDER BY created_at ASC`,
-    [issue.issue_id]
-  );
-  issue.logs = logs.rows;
+ const logs = await pool.query(
+  `SELECT status, updated_by, remarks, updated_at
+   FROM status_log
+   WHERE issue_id=$1
+   ORDER BY updated_at ASC`,
+  [issue.issue_id]
+);
+
 }
 
   const success = req.session.success;
@@ -386,12 +386,12 @@ const issues = await pool.query(`
 
   for (let issue of issues.rows) {
   const logs = await pool.query(
-    `SELECT status, updated_by, remarks, created_at
-     FROM status_log
-     WHERE issue_id=$1
-     ORDER BY created_at ASC`,
-    [issue.issue_id]
-  );
+  `SELECT status, updated_by, remarks, updated_at
+   FROM status_log
+   WHERE issue_id=$1
+   ORDER BY updated_at ASC`,
+  [issue.issue_id]
+);
   issue.logs = logs.rows;
   }
 
@@ -523,13 +523,13 @@ const issues = await pool.query(`
 `, [req.session.resolverId]);
 
 for (let issue of issues.rows) {
-  const logs = await pool.query(
-    `SELECT status, updated_by, remarks, created_at
-     FROM status_log
-     WHERE issue_id=$1
-     ORDER BY created_at ASC`,
-    [issue.issue_id]
-  );
+const logs = await pool.query(
+  `SELECT status, updated_by, remarks, updated_at
+   FROM status_log
+   WHERE issue_id=$1
+   ORDER BY updated_at ASC`,
+  [issue.issue_id]
+);
   issue.logs = logs.rows;
 }
 
