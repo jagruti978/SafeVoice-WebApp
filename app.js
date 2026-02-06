@@ -15,7 +15,6 @@ const session = require("express-session");
 const app = express();
 
 
-
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -98,6 +97,8 @@ if (
 
 
 
+
+
 // admin signup logic------------------------------------------------------
 app.post("/signup/admin", async (req, res) => {
   const { name, email, password } = req.body;
@@ -136,6 +137,7 @@ if (
 
 
 
+
 // resolver signup and login---------------------------------------------
 
 app.post("/signup/resolver", async (req, res) => {
@@ -171,6 +173,8 @@ if (
 }
 
 });
+
+
 
 
 // user dashboard--------------------------------------------------------------
@@ -343,12 +347,14 @@ app.post("/user/issue/update", async (req, res) => {
 });
 
 
-
 app.get("/logout", (req,res)=>{
   req.session.destroy(()=>{
     res.redirect("/");
   });
 });
+
+
+
 
 
 
@@ -477,6 +483,8 @@ app.post("/admin/assign", async (req, res) => {
     encodeURIComponent("Resolver assigned successfully")
   );
 });
+
+
 
 
 
