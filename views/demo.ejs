@@ -6,6 +6,9 @@
     <title>demo</title>
 </head>
 <body>
-    <b><a href="/demo">View demo users  <%= user.name %></a></b>
+    <b><a href="/demo">View demo users  <% users.forEach(user => { %>
+  <p><%= user.name %> - <%= user.email %></p>
+<% }) %>
+</a></b>
 </body>
 </html>
