@@ -29,6 +29,10 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
+app.get("/demo", async (req,res) =>{
+   const rs = await pool.query("Select * from demo_users");
+   res.render("demo" , {users:rs.rows});
+});
 
 
 //authentication pages--------------------------------------------
