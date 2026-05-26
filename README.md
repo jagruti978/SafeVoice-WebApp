@@ -18,13 +18,15 @@ Admin Dashboard
 <img width="748" height="479" alt="image" src="https://github.com/user-attachments/assets/6ecceaae-63b9-49a0-ade7-a8344bf3f5df" />
 <img width="746" height="470" alt="image" src="https://github.com/user-attachments/assets/4bf1aa7c-8aa0-4980-9788-51ac5b023525" />
 <img width="367" height="189" alt="image" src="https://github.com/user-attachments/assets/fbf3e800-f00d-4665-9f58-089a2bd73a87" />
+
 Issue assigned successfully to resolver .
-Now Again Login as resolver  now Resolver can see the assigned issue which was assigned by admin  now resolver have to provide solution  and solution can be add ,
+Now Again Login as resolver --> now Resolver can see the assigned issue which was assigned by admin --> now resolver have to provide solution --> and solution can be add ,
 edit , update or delete.
 
 <img width="847" height="462" alt="image" src="https://github.com/user-attachments/assets/4ab301f9-e0dd-4257-be2d-2c7e25b36988" />
 <img width="778" height="243" alt="image" src="https://github.com/user-attachments/assets/6d3d9835-469d-4229-92f8-796e51ef0d3a" />
-<img width="778" height="243" alt="image" src="https://github.com/user-attachments/assets/e565e982-b9fe-4089-aeb9-39ff66c4d01e" />
+<img width="1255" height="597" alt="image" src="https://github.com/user-attachments/assets/87f0fae2-5a04-4c11-96d4-5e8b1b574b57" />
+
 
 
 
