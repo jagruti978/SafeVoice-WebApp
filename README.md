@@ -13,7 +13,6 @@ User Dashboard :
 <img width="421" height="252" alt="image" src="https://github.com/user-attachments/assets/b7136883-e7a1-44e0-9f80-b538aed1e2a4" />
 <img width="1021" height="486" alt="image" src="https://github.com/user-attachments/assets/a00bc83f-c7d1-4605-9e6e-56551abe9df9" />
 Admin Dashboard
-<img width="1303" height="485" alt="image" src="https://github.com/user-attachments/assets/0ee0a224-0d93-4278-8f42-297ef7aa7813" />
 <img width="1303" height="485" alt="image" src="https://github.com/user-attachments/assets/95beab69-2f5d-4895-999d-d05de3a26d49" />
 <img width="748" height="479" alt="image" src="https://github.com/user-attachments/assets/6ecceaae-63b9-49a0-ade7-a8344bf3f5df" />
 <img width="746" height="470" alt="image" src="https://github.com/user-attachments/assets/4bf1aa7c-8aa0-4980-9788-51ac5b023525" />
